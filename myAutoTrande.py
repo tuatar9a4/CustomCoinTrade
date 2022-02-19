@@ -139,7 +139,7 @@ while True:
             elif ((내_코인_수*코인_매수_평균_계산(매매할_코인_이름))*0.9<지금_가격*내_코인_수) :
                 upbit.sell_market_order(매매할_코인_이름, 내_코인_수*0.9995)
                 pass
-        
+        print("거래중...")
         time.sleep(1)
     except Exception as e:
         print(e)
