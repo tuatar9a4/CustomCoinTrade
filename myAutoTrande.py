@@ -96,7 +96,7 @@ def 장종료가랑_비교(code="KRW-BTC",현재가=0):
      df = pyupbit.get_ohlcv(code, interval="minute60", count=2)
      for b in range(1,len(df)) :
         # 종가 - 현재가랑 마이너스가 4퍼 이상나면 팔기
-        if((((현재가-df.iloc[b]['close'])/df.iloc[b]['close'])*100)<-4):
+        if((((현재가-df.iloc[b]['close'])/df.iloc[b]['close'])*100)<-1):
             return "팔아"
 
 # 구매 
