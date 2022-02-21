@@ -106,6 +106,7 @@ def 목표가확인(code="KRW-BTC",k=0.5) :
     체결가 = 시간봉.iloc[0]['close'] + (시간봉.iloc[0]['high'] - 시간봉.iloc[0]['low']) * k
     return 체결가
 
+
 #코인 매수 평균알기
 def 코인_매수_평균_계산(code="KRW-BTC"):
     코드분석=code.split("-")
@@ -117,7 +118,7 @@ def 코인_매수_평균_계산(code="KRW-BTC"):
             break
 
 # 자동매매 시작
-매매할_코인_이름="KRW-KNC"
+매매할_코인_이름="KRW-ZRX"
 while True:
 
     try:
