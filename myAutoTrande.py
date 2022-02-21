@@ -89,9 +89,15 @@ def 상승하락률계산(code="KRW-BTC",현재가=0):
     df = pyupbit.get_ohlcv(code, interval="minute5", count=2)
     for b in range(1,len(df)) :
         # 현재 - 과거
-        if((((현재가-df.iloc[b]['open'])/df.iloc[b]['open'])*100)>5):
-            return "upsate"
-            pass
+        if((((현재가-df.iloc[b]['close'])/df.iloc[b]['close'])*100)>2):
+            return "팔지마"
+
+def 장종료가랑_비교(code="KRW-BTC",현재가=0):
+     df = pyupbit.get_ohlcv(code, interval="minute60", count=2)
+     for b in range(1,len(df)) :
+        # 종가 - 현재가랑 마이너스가 4퍼 이상나면 팔기
+        if((((현재가-df.iloc[b]['close'])/df.iloc[b]['close'])*100)<-4):
+            return "팔아"
 
 # 구매 
 def 목표가확인(code="KRW-BTC",k=0.5) :
@@ -102,13 +108,13 @@ def 목표가확인(code="KRW-BTC",k=0.5) :
 
 #코인 매수 평균알기
 def 코인_매수_평균_계산(code="KRW-BTC"):
+    코드분석=code.split("-")
     내보유코인 =upbit.get_balances()
     for 코인 in 내보유코인:
-        if(코인["currency"]=="BTT"):
+        if(코인["currency"]==코드분석[1]):
             print(코인["avg_buy_price"])
             return 코인["avg_buy_price"]
             break
-
 
 # 자동매매 시작
 매매할_코인_이름="KRW-KNC"
@@ -129,14 +135,21 @@ while True:
         else:
             pass
         내_코인_수=upbit.get_balance(매매할_코인_이름)
-        if 상승하락률계산(매매할_코인_이름,지금_가격)=="upsate":
-
+        if 상승하락률계산(매매할_코인_이름,지금_가격)=="팔지마":
+            # 5퍼 이상으로 올랐으면 안팜 
             pass
         elif (내_코인_수>(지금_가격/5000)*0.98):
+            # 팔수있음
             if (지금_가격*내_코인_수>내_코인_수*코인_매수_평균_계산(매매할_코인_이름))*1.15 :
+                # 15퍼 이상 이득일때 팔고
                 upbit.sell_market_order(매매할_코인_이름, 내_코인_수*0.9995)
                 pass
-            elif ((내_코인_수*코인_매수_평균_계산(매매할_코인_이름))*0.9<지금_가격*내_코인_수) :
+            elif(장종료가랑_비교(매매할_코인_이름,지금_가격)=="팔아"):
+                # 샀는데 올른후 거기에서 가격이 떨어지면 팔자 
+                upbit.sell_market_order(매매할_코인_이름, 내_코인_수*0.9995)
+                pass
+            elif ((내_코인_수*코인_매수_평균_계산(매매할_코인_이름))*0.95<지금_가격*내_코인_수) :
+                # 지금 내가 산 총 금액 
                 upbit.sell_market_order(매매할_코인_이름, 내_코인_수*0.9995)
                 pass
         print("거래중...")
