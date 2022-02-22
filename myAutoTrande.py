@@ -85,73 +85,82 @@ def getmount(code="KRW-BTC"):
         return "up"
     
 #상승률 하락률
-def 상승하락률계산(code="KRW-BTC",현재가=0):
+def upDownCoount(code="KRW-BTC",current=0):
     df = pyupbit.get_ohlcv(code, interval="minute5", count=2)
     for b in range(1,len(df)) :
         # 현재 - 과거
-        if((((현재가-df.iloc[b]['close'])/df.iloc[b]['close'])*100)>2):
-            return "팔지마"
+        if((((current-df.iloc[b]['close'])/df.iloc[b]['close'])*100)>2):
+           return "don't sell"
 
-def 장종료가랑_비교(code="KRW-BTC",현재가=0):
+def cloesVsCurrent(code="KRW-BTC",current=0):
      df = pyupbit.get_ohlcv(code, interval="minute60", count=2)
      for b in range(1,len(df)) :
         # 종가 - 현재가랑 마이너스가 4퍼 이상나면 팔기
-        if((((현재가-df.iloc[b]['close'])/df.iloc[b]['close'])*100)<-1):
-            return "팔아"
+        if(current<float(df.iloc[b]['close'])):
+            return "sell"
+        else:
+            return "none"
 
 # 구매 
-def 목표가확인(code="KRW-BTC",k=0.5) :
+def getTarget(code="KRW-BTC",k=0.5) :
     """변동성 돌파 전략으로 매수 목표가 조회"""
-    시간봉 = pyupbit.get_ohlcv(code, interval="minute60", count=2)
-    체결가 = 시간봉.iloc[0]['close'] + (시간봉.iloc[0]['high'] - 시간봉.iloc[0]['low']) * k
-    return 체결가
+    timeBong = pyupbit.get_ohlcv(code, interval="minute60", count=2)
+    target = timeBong.iloc[0]['close'] + (timeBong.iloc[0]['high'] - timeBong.iloc[0]['low']) * k
+    return target
 
 
 #코인 매수 평균알기
-def 코인_매수_평균_계산(code="KRW-BTC"):
-    코드분석=code.split("-")
-    내보유코인 =upbit.get_balances()
-    for 코인 in 내보유코인:
-        if(코인["currency"]==코드분석[1]):
-            print(코인["avg_buy_price"])
-            return 코인["avg_buy_price"]
+def myAverage(code="KRW-BTC"):
+    codeSplit=code.split("-")
+    myCoins =upbit.get_balances()
+    for coin in myCoins:
+        if(coin["currency"]==codeSplit[1]):
+            return float(coin["avg_buy_price"])
             break
 
 # 자동매매 시작
-매매할_코인_이름="KRW-ZRX"
+targetCoin="KRW-ZRX"
 while True:
 
     try:
-        지금시간 = datetime.datetime.now()
-        시작시간 = get_start_time(매매할_코인_이름)
-        끝나는시간 = 시작시간 + datetime.timedelta(days=1)
-        지금_가격 = get_current_price(매매할_코인_이름)
+        currentTime = datetime.datetime.now()
+        startTime = get_start_time(targetCoin)
+        endTime = startTime + datetime.timedelta(days=1)
+        currentPrice = get_current_price(targetCoin)
 
-        if 시작시간 < 지금시간 < 끝나는시간 - datetime.timedelta(seconds=10):
-            목표가 = 목표가확인(매매할_코인_이름, 0.5)
-            if 목표가 < 지금_가격:
-                내잔고 = get_balance("KRW")
-                if 내잔고 > 5000:
-                    upbit.buy_market_order(매매할_코인_이름, 내잔고*0.9995)
+        if startTime < currentTime < endTime - datetime.timedelta(seconds=10):
+            targetPrice = getTarget(targetCoin, 0.5)
+            if targetPrice < currentPrice:
+                myAccount = get_balance("KRW")
+                if myAccount > 5000:
+                    pass
+                    # upbit.buy_market_order(매매할_코인_이름, 내잔고*0.9995)
         else:
             pass
-        내_코인_수=upbit.get_balance(매매할_코인_이름)
-        if 상승하락률계산(매매할_코인_이름,지금_가격)=="팔지마":
+        myCoins=upbit.get_balance(targetCoin)
+        if upDownCoount(targetCoin,currentPrice)=="don't sell":
             # 5퍼 이상으로 올랐으면 안팜 
             pass
-        elif (내_코인_수>(지금_가격/5000)*0.98):
+        elif (myCoins>(currentPrice/5000)*0.98):
             # 팔수있음
-            if (지금_가격*내_코인_수>내_코인_수*코인_매수_평균_계산(매매할_코인_이름))*1.15 :
+            print("팔수 있음")
+            print((currentPrice*myCoins)>(myCoins*myAverage(targetCoin)*1.15))
+            print(cloesVsCurrent(targetCoin,currentPrice)=="sell")
+            print((myCoins*myAverage(targetCoin))*0.98<currentPrice*myCoins)
+            if (currentPrice*myCoins)>(myCoins*myAverage(targetCoin)*1.15) :
                 # 15퍼 이상 이득일때 팔고
-                upbit.sell_market_order(매매할_코인_이름, 내_코인_수*0.9995)
+                print("이득이라 판다")
+                # upbit.sell_market_order(targetCoin, myCoins*0.9995)
                 pass
-            elif(장종료가랑_비교(매매할_코인_이름,지금_가격)=="팔아"):
+            elif(cloesVsCurrent(targetCoin,currentPrice)=="sell"):
                 # 샀는데 올른후 거기에서 가격이 떨어지면 팔자 
-                upbit.sell_market_order(매매할_코인_이름, 내_코인_수*0.9995)
+                print("샀는데 떨어져서 판다")
+                # upbit.sell_market_order(targetCoin, myCoins*0.9995)
                 pass
-            elif ((내_코인_수*코인_매수_평균_계산(매매할_코인_이름))*0.95<지금_가격*내_코인_수) :
+            elif ((myCoins*myAverage(targetCoin))*0.96>currentPrice*myCoins) :
                 # 지금 내가 산 총 금액 
-                upbit.sell_market_order(매매할_코인_이름, 내_코인_수*0.9995)
+                print("에라이 손절 ")
+                # upbit.sell_market_order(매매할_코인_이름, 내_코인_수*0.9995)
                 pass
         print("거래중...")
         time.sleep(1)

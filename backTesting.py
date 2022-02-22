@@ -3,9 +3,9 @@ import numpy as np
 
 
 # OHLCV(open,high,low,close,vloume) 로 당일 시가,고사,저가,종가, 거래량에 대한 데이터
-df = pyupbit.get_ohlcv("KRW-BTC",count=7)
+df = pyupbit.get_ohlcv("KRW-ZRX",interval="minute60",count=60)
 # 변동성 돌파 기준 범위 계산, (고강 - 저가) *k
-df['range'] = (df['high'] - df['low']) * 0.8
+df['range'] = (df['high'] - df['low']) * 0.3
 # range 컬럼을 한칸씩 밑으로 내림(.shift(1))
 df['target'] = df['open'] + df['range'].shift(1)
 
