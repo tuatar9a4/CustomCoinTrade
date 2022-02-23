@@ -135,8 +135,8 @@ while True:
         if startTime < currentTime < endTime - datetime.timedelta(seconds=10):
             targetPrice = getTarget(targetCoin, 0.5)
             print("===구매===")
-            print("targetCoin")
-            print(targetCoin)
+            print("targetPrice")
+            print(targetPrice)
             print("currentPrice")
             print(currentPrice)
             if targetPrice < currentPrice:
