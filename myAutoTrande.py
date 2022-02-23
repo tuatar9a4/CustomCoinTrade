@@ -43,7 +43,7 @@ print("autotrade start")
 # print("btc : " ,btc)
 
 # print("내 지갑의 코인 코드")
-my_wallet_code =upbit.get_balances()
+# my_wallet_code =upbit.get_balances()
 # for my in my_wallet_code :
 #     myCode=my['unit_currency']+"-"+my['currency']
 #     try:
@@ -93,9 +93,14 @@ def upDownCoount(code="KRW-BTC",current=0):
            return "don't sell"
 
 def cloesVsCurrent(code="KRW-BTC",current=0):
-     df = pyupbit.get_ohlcv(code, interval="minute60", count=2)
-     for b in range(1,len(df)) :
+    df = pyupbit.get_ohlcv(code, interval="minute60", count=2)
+    print("==cloesVsCurrent==")
+    print("code")
+    print(code)
+    for b in range(1,len(df)) :
         # 종가 - 현재가랑 마이너스가 4퍼 이상나면 팔기
+        print("float(df.iloc[b]['close'])")
+        print(float(df.iloc[b]['close']))
         if(current<float(df.iloc[b]['close'])):
             return "sell"
         else:
@@ -122,7 +127,7 @@ def myAverage(code="KRW-BTC"):
 targetCoin="KRW-ZRX"
 while True:
 
-    try:
+    # try:
         currentTime = datetime.datetime.now()
         startTime = get_start_time(targetCoin)
         endTime = startTime + datetime.timedelta(days=1)
@@ -130,8 +135,15 @@ while True:
 
         if startTime < currentTime < endTime - datetime.timedelta(seconds=10):
             targetPrice = getTarget(targetCoin, 0.5)
+            print("===구매===")
+            print("targetCoin")
+            print(targetCoin)
+            print("currentPrice")
+            print(currentPrice)
             if targetPrice < currentPrice:
                 myAccount = get_balance("KRW")
+                print("myAccount")
+                print(myAccount)
                 if myAccount > 5000:
                     upbit.buy_market_order(targetCoin, myAccount*0.9995)
                     # pass
@@ -143,7 +155,13 @@ while True:
             pass
         elif (myCoins>(currentPrice/5000)*0.98):
             # 팔수있음
-            print("팔수 있음")
+            print("==판매==")
+            print("currentPrice")
+            print(currentPrice)
+            print("myCoins")
+            print(myCoins)
+            print("myAverage(targetCoin)")
+            print(myAverage(targetCoin))
             if (currentPrice*myCoins)>(myCoins*myAverage(targetCoin)*1.15) :
                 # 15퍼 이상 이득일때 팔고
                 upbit.sell_market_order(targetCoin, myCoins*0.9995)
@@ -158,6 +176,6 @@ while True:
                 pass
         print("거래중...")
         time.sleep(1)
-    except Exception as e:
-        print(e)
-        time.sleep(1)
+    # except Exception as e:
+    #     print(e)
+    #     time.sleep(1)
