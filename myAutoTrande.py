@@ -133,8 +133,8 @@ while True:
             if targetPrice < currentPrice:
                 myAccount = get_balance("KRW")
                 if myAccount > 5000:
-                    pass
-                    # upbit.buy_market_order(매매할_코인_이름, 내잔고*0.9995)
+                    upbit.buy_market_order(targetCoin, myAccount*0.9995)
+                    # pass
         else:
             pass
         myCoins=upbit.get_balance(targetCoin)
