@@ -126,7 +126,7 @@ def myAverage(code="KRW-BTC"):
 targetCoin="KRW-ZRX"
 while True:
 
-    # try:
+    try:
         currentTime = datetime.datetime.now()
         startTime = get_start_time(targetCoin)
         endTime = startTime + datetime.timedelta(days=1)
@@ -175,6 +175,6 @@ while True:
                 pass
         print("거래중...")
         time.sleep(1)
-    # except Exception as e:
-    #     print(e)
-    #     time.sleep(1)
+    except Exception as e:
+        print(e)
+        time.sleep(1)
