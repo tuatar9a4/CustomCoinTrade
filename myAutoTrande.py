@@ -95,16 +95,15 @@ def upDownCoount(code="KRW-BTC",current=0):
 def cloesVsCurrent(code="KRW-BTC",current=0):
     df = pyupbit.get_ohlcv(code, interval="minute60", count=2)
     print("==cloesVsCurrent==")
-    print("code")
-    print(code)
-    for b in range(1,len(df)) :
-        # 종가 - 현재가랑 마이너스가 4퍼 이상나면 팔기
-        print("float(df.iloc[b]['close'])")
-        print(float(df.iloc[b]['close']))
-        if(current<float(df.iloc[b]['close'])):
-            return "sell"
-        else:
-            return "none"
+    print("current")
+    print(current)
+    # 종가 - 현재가랑 마이너스가 4퍼 이상나면 팔기
+    print("float(df.iloc[b]['close'])")
+    print(float(df.iloc[0]['close']))
+    if(current<float(df.iloc[0]['close'])):
+        return "sell"
+    else:
+        return "none"
 
 # 구매 
 def getTarget(code="KRW-BTC",k=0.5) :
