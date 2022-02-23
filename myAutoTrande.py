@@ -144,23 +144,17 @@ while True:
         elif (myCoins>(currentPrice/5000)*0.98):
             # 팔수있음
             print("팔수 있음")
-            print((currentPrice*myCoins)>(myCoins*myAverage(targetCoin)*1.15))
-            print(cloesVsCurrent(targetCoin,currentPrice)=="sell")
-            print((myCoins*myAverage(targetCoin))*0.98<currentPrice*myCoins)
             if (currentPrice*myCoins)>(myCoins*myAverage(targetCoin)*1.15) :
                 # 15퍼 이상 이득일때 팔고
-                print("이득이라 판다")
-                # upbit.sell_market_order(targetCoin, myCoins*0.9995)
+                upbit.sell_market_order(targetCoin, myCoins*0.9995)
                 pass
             elif(cloesVsCurrent(targetCoin,currentPrice)=="sell"):
                 # 샀는데 올른후 거기에서 가격이 떨어지면 팔자 
-                print("샀는데 떨어져서 판다")
-                # upbit.sell_market_order(targetCoin, myCoins*0.9995)
+                upbit.sell_market_order(targetCoin, myCoins*0.9995)
                 pass
             elif ((myCoins*myAverage(targetCoin))*0.96>currentPrice*myCoins) :
                 # 지금 내가 산 총 금액 
-                print("에라이 손절 ")
-                # upbit.sell_market_order(매매할_코인_이름, 내_코인_수*0.9995)
+                upbit.sell_market_order(targetCoin, myCoins*0.9995)
                 pass
         print("거래중...")
         time.sleep(1)
